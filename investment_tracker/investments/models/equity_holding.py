@@ -8,6 +8,11 @@ class NotSufficientFunds(Exception):
         self.message = message
 
 
+class NotSufficientUnits(Exception):
+    def __init__(self, message="Not sufficient units for this trade") -> Exception:
+        self.message = message
+
+
 DIVIDEND_MONTHS = [
     ("JAN", "January"),
     ("FEB", "February"),
@@ -45,6 +50,14 @@ class EquityHolding(AbstractHolding):
                 )
             )
 
+    def _check_sufficient_units(self, units):
+        if units > self.cumulative_units:
+            raise NotSufficientUnits(
+                "Current units {} is less than attempted trade of {} units".format(
+                    self.cumulative_units, units
+                )
+            )
+
     def buy(self, units, ask_price):
         trade_value = units * ask_price
         self._check_sufficient_cash_position(trade_value)
@@ -55,7 +68,8 @@ class EquityHolding(AbstractHolding):
 
     def sell(self, units, bid_price):
         trade_value = units * bid_price
-        self.add_holding(units, bid_price)
+        self._check_sufficient_units(units)
+        self.reduce_holding(units, bid_price)
         account = self.account
         account.cash_position += trade_value
         account.save()
