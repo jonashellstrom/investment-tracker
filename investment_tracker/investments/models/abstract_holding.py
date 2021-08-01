@@ -12,13 +12,15 @@ class AbstractHolding(models.Model):
     cumulative_cost = models.DecimalField(max_digits=16, decimal_places=2, default=0)
 
     last_ask_price = models.DecimalField(max_digits=16, decimal_places=2, default=0)
-    holdings_value = models.DecimalField(max_digits=32, decimal_places=2, default=0)
 
     class Meta:
         abstract = True
 
     def get_average_cost(self):
         return round(self.cumulative_cost + self.cumulative_units, 2)
+
+    def get_holding_value(self):
+        return round(self.cumulative_units * self.last_ask_price, 2)
 
     def add_holding(self, units, bid_price):
         self.cumulative_units += units
@@ -30,11 +32,6 @@ class AbstractHolding(models.Model):
         self.cumulative_cost -= units * ask_price
         self.save()
 
-    def _update_holdings_value(self, new_price):
-        self.holdings_value = self.cumulative_units * new_price
-        self.save()
-
     def update_last_ask_price(self, ask_price):
         self.last_ask_price = ask_price
         self.save()
-        self._update_holdings_value(ask_price)
