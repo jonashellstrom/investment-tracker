@@ -39,6 +39,11 @@ class EquityHolding(AbstractHolding):
         default=list,
     )
 
+    @property
+    def projected_dividend(self):
+        "Returns the annual dividend based on the current holdings value"
+        return round(self.holding_value * self.dividend_yield, 2)
+
     def __str__(self):
         return "Investment in {}, traded on {}".format(self.ticker, self.exchange)
 
@@ -73,6 +78,3 @@ class EquityHolding(AbstractHolding):
         account = self.account
         account.cash_position += trade_value
         account.save()
-
-    def projected_dividend(self):
-        return round(self.holdings_value * self.dividend_yield, 2)
