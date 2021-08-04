@@ -1,17 +1,13 @@
 from decimal import Decimal
 from django.test import TestCase
-from django.contrib.auth import get_user_model
 from rest_framework.test import APIRequestFactory, force_authenticate
 
+from investments.views.tests.force_authentication_mixin import ForceAuthenticationMixin
 from investments.models.tests.factories.equity_holding import EquityHoldingFactory
-from investments.views.equity_holding import EquityHoldingListCreate
-from investments.views.equity_holding import EquityHoldingRetrieve
-
-
-class ForceAuthenticationMixin:
-    def setUp(self) -> None:
-        User = get_user_model()
-        self.user = User.objects.create_user(username="foo", password="bar")
+from investments.views.equity_holding import (
+    EquityHoldingListCreate,
+    EquityHoldingRetrieve,
+)
 
 
 class TestEquityHoldingListCreateView(ForceAuthenticationMixin, TestCase):
