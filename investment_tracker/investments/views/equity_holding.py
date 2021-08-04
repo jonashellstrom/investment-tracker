@@ -5,12 +5,11 @@ from rest_framework.generics import (
     get_object_or_404,
 )
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 
 from investments.models.equity_holding import EquityHolding
 from investments.serializers.equity_holding import EquityHoldingSerializer
 from investments.views.pagination import HoldingPagination
-from investments.models.account import Account
+from investments.views.auth import AuthMixin
 
 
 class MultipleFieldLookupMixin:
@@ -23,7 +22,7 @@ class MultipleFieldLookupMixin:
         return obj
 
 
-class EquityHoldingRetrieve(MultipleFieldLookupMixin, RetrieveAPIView):
+class EquityHoldingRetrieve(AuthMixin, MultipleFieldLookupMixin, RetrieveAPIView):
     """
     Detail view for an equity holding.
     """
@@ -31,10 +30,9 @@ class EquityHoldingRetrieve(MultipleFieldLookupMixin, RetrieveAPIView):
     queryset = EquityHolding.objects.all()
     serializer_class = EquityHoldingSerializer
     lookup_fields = ["account_id", "id"]
-    permission_classes = (IsAuthenticated,)
 
 
-class EquityHoldingListCreate(ListCreateAPIView):
+class EquityHoldingListCreate(AuthMixin, ListCreateAPIView):
     """
     List view for equity holdings.
     """
@@ -43,7 +41,6 @@ class EquityHoldingListCreate(ListCreateAPIView):
     should_paginate = True
     pagination_class = HoldingPagination
     serializer_class = EquityHoldingSerializer
-    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         """

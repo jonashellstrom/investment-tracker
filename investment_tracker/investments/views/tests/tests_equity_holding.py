@@ -1,13 +1,20 @@
 from decimal import Decimal
 from django.test import TestCase
-from rest_framework.test import APIRequestFactory
+from django.contrib.auth import get_user_model
+from rest_framework.test import APIRequestFactory, force_authenticate
 
 from investments.models.tests.factories.equity_holding import EquityHoldingFactory
-from investments.views.equity_holding import EquityHoldingList
+from investments.views.equity_holding import EquityHoldingListCreate
 from investments.views.equity_holding import EquityHoldingRetrieve
 
 
-class TestEquityHoldingListView(TestCase):
+class ForceAuthenticationMixin:
+    def setUp(self) -> None:
+        User = get_user_model()
+        self.user = User.objects.create_user(username="foo", password="bar")
+
+
+class TestEquityHoldingListCreateView(ForceAuthenticationMixin, TestCase):
     def setUp(self) -> None:
         self.holding = EquityHoldingFactory()
         self.account = self.holding.account
@@ -15,11 +22,13 @@ class TestEquityHoldingListView(TestCase):
         self.holdings = [self.holding, self.holding_2]
 
         self.request_factory = APIRequestFactory()
-        self.view = EquityHoldingList.as_view()
+        self.view = EquityHoldingListCreate.as_view()
         self.path = "accounts/{}/equity".format(self.account.id)
+        super().setUp()
 
     def test_list_holdings(self):
         request = self.request_factory.get(self.path, format="json")
+        force_authenticate(request, user=self.user)
         response = self.view(request, account_id=self.account.id)
 
         self.assertEqual(response.status_code, 200)
@@ -30,8 +39,19 @@ class TestEquityHoldingListView(TestCase):
         for item in response.data:
             self.assertIn(item["id"], holding_id_strings)
 
+    def test_create_holding(self):
+        request = self.request_factory.post(
+            self.path,
+            data=dict(ticker="RY.TO", exchange="TSX", dividend_schedule=["JAN"]),
+            format="json",
+        )
+        force_authenticate(request, user=self.user)
+        response = self.view(request, account_id=self.account.id)
 
-class TestEquityHoldingRetrieveView(TestCase):
+        self.assertEqual(response.status_code, 201)
+
+
+class TestEquityHoldingRetrieveView(ForceAuthenticationMixin, TestCase):
     def setUp(self) -> None:
         self.holding = EquityHoldingFactory()
         self.account = self.holding.account
@@ -39,9 +59,11 @@ class TestEquityHoldingRetrieveView(TestCase):
         self.request_factory = APIRequestFactory()
         self.view = EquityHoldingRetrieve.as_view()
         self.path = "accounts/{}/equity/{}".format(self.account.id, self.holding.id)
+        super().setUp()
 
     def test_retrieve_holding(self):
         request = self.request_factory.get(self.path, format="json")
+        force_authenticate(request, user=self.user)
         response = self.view(request, account_id=self.account.id, id=self.holding.id)
 
         self.assertEqual(response.status_code, 200)
