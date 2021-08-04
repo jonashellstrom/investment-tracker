@@ -1,1 +1,1 @@
-from .equity_holding import EquityHoldingRetrieve, EquityHoldingList
+from .equity_holding import EquityHoldingRetrieve, EquityHoldingListCreate

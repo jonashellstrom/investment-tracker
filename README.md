@@ -48,6 +48,7 @@ A simple investment tracker built with Django that models investment accounts an
 
 These endpoints provide functionality to manage accounts and investment holdings.
 
+- Add equity holding for an account: `POST /account/<account_id>/equity`
 - List equity holdings for an account: `GET /account/<account_id>/equity`
 - Retrieve equity holding details: `GET /account/<account_id>/equity/<id>`
 

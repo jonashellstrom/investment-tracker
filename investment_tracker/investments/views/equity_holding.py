@@ -1,12 +1,16 @@
+from rest_framework import status
 from rest_framework.generics import (
     RetrieveAPIView,
-    ListAPIView,
+    ListCreateAPIView,
     get_object_or_404,
 )
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+
 from investments.models.equity_holding import EquityHolding
 from investments.serializers.equity_holding import EquityHoldingSerializer
 from investments.views.pagination import HoldingPagination
+from investments.models.account import Account
 
 
 class MultipleFieldLookupMixin:
@@ -30,7 +34,7 @@ class EquityHoldingRetrieve(MultipleFieldLookupMixin, RetrieveAPIView):
     permission_classes = (IsAuthenticated,)
 
 
-class EquityHoldingList(ListAPIView):
+class EquityHoldingListCreate(ListCreateAPIView):
     """
     List view for equity holdings.
     """
@@ -47,3 +51,12 @@ class EquityHoldingList(ListAPIView):
         """
         account_id = self.kwargs.get("account_id")
         return super().get_queryset().filter(account_id=account_id)
+
+    def create(self, validated_data, **kwargs):
+        account_id = kwargs.get("account_id")
+        holding = EquityHolding.objects.create(
+            account_id=account_id, **validated_data.data
+        )
+        return Response(
+            self.serializer_class(holding).data, status=status.HTTP_201_CREATED
+        )

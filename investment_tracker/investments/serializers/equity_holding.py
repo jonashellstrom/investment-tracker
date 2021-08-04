@@ -11,12 +11,14 @@ class EquityHoldingSerializer(serializers.ModelSerializer):
     account = serializers.PrimaryKeyRelatedField(source="account.id", read_only=True)
 
     # Expose property attributes to view
-    projected_dividend = serializers.DecimalField(max_digits=32, decimal_places=2)
+    projected_dividend = serializers.DecimalField(
+        max_digits=32, decimal_places=2, required=False
+    )
     average_purchase_price = serializers.DecimalField(
-        source="average_cost", max_digits=32, decimal_places=2
+        source="average_cost", max_digits=32, decimal_places=2, required=False
     )
     current_holding_value = serializers.DecimalField(
-        source="holding_value", max_digits=32, decimal_places=2
+        source="holding_value", max_digits=32, decimal_places=2, required=False
     )
 
     class Meta:
