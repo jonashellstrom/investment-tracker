@@ -18,7 +18,11 @@ class AbstractHolding(models.Model):
     @property
     def average_cost(self):
         "Returns the cost average for a holding"
-        return round(self.cumulative_cost / self.cumulative_units, 2)
+        return (
+            round(self.cumulative_cost / self.cumulative_units, 2)
+            if self.cumulative_units
+            else 0
+        )
 
     @property
     def holding_value(self):
