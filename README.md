@@ -29,12 +29,14 @@ A simple investment tracker built with Django that models investment accounts an
 │   │   └── tests
 │   ├── serializers
 │   │   ├── __init__.py
+│   │   ├── account.py
 │   │   ├── equity_holding.py
 │   │   └── tests
 │   ├── tests.py
 │   ├── urls.py
 │   └── views
 │       ├── __init__.py
+│       ├── account.py
 │       ├── equity_holding.py
 │       ├── pagination.py
 │       └── tests
@@ -47,6 +49,13 @@ A simple investment tracker built with Django that models investment accounts an
 ## Endpoints
 
 These endpoints provide functionality to manage accounts and investment holdings.
+
+### Accounts
+
+- Add account: `POST /account`
+- Retrieve account details: `GET /account/<id>`
+
+### Equity Holdings
 
 - Add equity holding for an account: `POST /account/<account_id>/equity`
 - List equity holdings for an account: `GET /account/<account_id>/equity`

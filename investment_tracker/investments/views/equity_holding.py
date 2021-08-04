@@ -24,7 +24,7 @@ class MultipleFieldLookupMixin:
 
 class EquityHoldingRetrieve(AuthMixin, MultipleFieldLookupMixin, RetrieveAPIView):
     """
-    Detail view for an equity holding.
+    Retrieve view for an equity holding.
     """
 
     queryset = EquityHolding.objects.all()
@@ -34,7 +34,7 @@ class EquityHoldingRetrieve(AuthMixin, MultipleFieldLookupMixin, RetrieveAPIView
 
 class EquityHoldingListCreate(AuthMixin, ListCreateAPIView):
     """
-    List view for equity holdings.
+    List/Create view for equity holdings.
     """
 
     queryset = EquityHolding.objects.all()
